@@ -6,4 +6,7 @@
 
 (use-package emms
   :straight '(emms :fetcher github :repo "git@github.com:emacsmirror/emms.git")
-  :config (emms-add-directory-tree "~/Music"))
+  :config (progn
+            (emms-add-directory-tree "~/Music")
+            (require 'emms-player-simple)
+            (push emms-player-ogg123 emms-player-list)))

@@ -3,6 +3,22 @@
 import os
 import orgparse
 
+class AgendaItem:
+
+    def __init__(self, heading, status, tags=None, parent=None):
+        self.heading = heading
+        self.status = status
+        self.tags = tags or {}
+        self.parent = parent
+
+    def __str__(self):
+        return f"{self.status} {self.heading}"
+
+    def longname(self):
+        return self.heading + (""
+                               if self.parent is None
+                               else (" (in " + self.parent + ")"))
+
 def load_agenda_file(filename,
                      n_results=None,
                      require_todo=None,
@@ -17,12 +33,12 @@ def load_agenda_file(filename,
              else entry.todo in todo_keys)
             and (require_tag is None
                  or require_tag in entry.tags)):
-            results.append((entry.get_heading() + (""
-                                                   if isinstance(entry.get_parent(), orgparse.node.OrgRootNode)
-                                                   else (" (in " + entry.get_parent().get_heading() + ")")),
-                            entry.todo,
-                            entry.tags))
-
+            results.append(AgendaItem(entry.get_heading(),
+                                      status=entry.todo,
+                                      tags=entry.tags,
+                                      parent=(None
+                                              if isinstance(entry.get_parent(), orgparse.node.OrgRootNode)
+                                              else entry.get_parent().get_heading())))
     for top_entry in base_node.children:
         if top_entry.children:
             for sub_entry in top_entry.children:
@@ -43,3 +59,9 @@ for entry in load_agenda_file("$ORG/projects.org",
 for item in load_agenda_file("$ORG/shopping.org",
                              require_todo="ORDERED"):
     print("Ordered item:", item)
+
+for item in load_agenda_file("$ORG/learning.org",
+                             require_todo="OPEN",
+                             n_results=6,
+                             ):
+    print("Learning:", item)

@@ -1,18 +1,29 @@
 #!/usr/bin/env python3
 
+import datetime
 import os
 import orgparse
 
 class AgendaItem:
 
-    def __init__(self, heading, status, tags=None, parent=None):
+    def __init__(self, heading, status, tags=None, properties=None, parent=None):
         self.heading = heading
         self.status = status
         self.tags = tags or {}
+        self.properties = properties or {}
         self.parent = parent
+        # caching:
+        self._timestamp = None
 
     def __str__(self):
         return f"{self.status} {self.heading}"
+
+    def last_state_change(self):
+        if not self._timestamp:
+            if 'last-state-change' in self.properties:
+                iso = self.properties['last-state-change']
+                self._timestamp = datetime.datetime.fromisoformat(iso[1:11] + "T" + iso[16:21])
+        return self._timestamp
 
     def longname(self):
         return self.heading + (""
@@ -36,6 +47,7 @@ def load_agenda_file(filename,
             results.append(AgendaItem(entry.get_heading(),
                                       status=entry.todo,
                                       tags=entry.tags,
+                                      properties=entry.properties,
                                       parent=(None
                                               if isinstance(entry.get_parent(), orgparse.node.OrgRootNode)
                                               else entry.get_parent().get_heading())))
@@ -58,7 +70,7 @@ for entry in load_agenda_file("$ORG/projects.org",
 
 for item in load_agenda_file("$ORG/shopping.org",
                              require_todo="ORDERED"):
-    print("Ordered item:", item)
+    print("Ordered item:", item, item.last_state_change())
 
 for item in load_agenda_file("$ORG/learning.org",
                              require_todo="OPEN",

@@ -1,0 +1,6 @@
+* Another page
+
+  Also with some text.
+
+  And a [[index.org][link back to the startpage]].
+  

@@ -1,0 +1,13 @@
+* First top-level heading
+
+  This is a sample page, and this is the first paragraph of it.
+
+* Second top-level heading
+
+** First subheading of second top-level heading
+
+   Some text about the sub-topic.
+   
+** Another subheading.
+
+   And a [[other.org][link to another page]].

@@ -1,3 +1,5 @@
+#+TITLE: Home page
+
 * First top-level heading
 
   This is a sample page, and this is the first paragraph of it.
@@ -10,4 +12,5 @@
    
 ** Another subheading.
 
-   And a [[other.org][link to another page]].
+   And a [[file:other.org][link to another page]].
+   

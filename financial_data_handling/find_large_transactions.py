@@ -19,9 +19,10 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--size", type=float, default=1000)
     parser.add_argument("--output", "-o", help="""Output filename""")
+    parser.add_argument("--ignore", "-i", help="""Ignore rows that have this string in their Narrative.""")
     return vars(parser.parse_args())
 
-def find_large_transactions(size, output):
+def find_large_transactions(size, output, ignore):
     """Scan through a collection of bank statements,
     looking for transactions above a given size."""
     transactions = collections.defaultdict(lambda:collections.defaultdict(set))
@@ -29,8 +30,10 @@ def find_large_transactions(size, output):
         with open(filename) as instream:
             for row in csv.DictReader(instream):
                 try:
-                    if ((float(row["Cr Amount"]) >= size)
-                        or (float(row["Dr Amount"]) >= size)):
+                    if (((float(row["Cr Amount"]) >= size)
+                         or (float(row["Dr Amount"]) >= size))
+                        and ((not ignore)
+                             or (not ignore in row['Narrative']))):
                         frozen_row = frozendict(row)
                         # transactions[row["Value Date"]].append((filename, frozen_row))
                         transactions[row["Value Date"]][frozen_row].add(filename)
